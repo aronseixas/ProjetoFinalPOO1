@@ -142,7 +142,6 @@ public class RedeSocial {
             throw new CampoVazioException();
         }
 
-        //IDENTIFICAÇÃO DO USUARIO
         for (int i = 0; i < quantUsuarios; i++) {
             if (loginUsuario.equals(listaDeUsuarios[i].getLogin())){
                 checkUsuario = true;
@@ -155,7 +154,6 @@ public class RedeSocial {
             throw new UserNotFoundException();
         }
 
-        //IDENTIFICAÇÃO DA SENHA
         if(listaDeUsuarios[posicaoDoUsuario].validarSenha(senhaUsuario)){
             System.out.println("\nSenha ✓");
         } else {
