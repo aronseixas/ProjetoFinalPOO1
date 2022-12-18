@@ -2,14 +2,15 @@ package redesocial.usuarios;
 
 import redesocial.exceptions.CampoVazioException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Usuario {
     private String nome;
     private String login;
     private String senha;
-    private Post[] listaDePosts = new Post[100];
-    private int quantPosts = 0;
+    private List<Post> listaDePosts = new ArrayList<>();
 
     public Usuario(String nome, String login, String senha) {
         this.nome = nome;
@@ -33,16 +34,8 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public Post[] getListaDePosts() {
+    public List<Post> getListaDePosts() {
         return listaDePosts;
-    }
-
-    public int getQuantPosts() {
-        return quantPosts;
-    }
-
-    public void setQuantPosts(int quantPosts) {
-        this.quantPosts = quantPosts;
     }
 
     public Post PostarTimeLine () throws CampoVazioException {

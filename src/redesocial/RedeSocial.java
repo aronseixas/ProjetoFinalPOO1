@@ -174,9 +174,8 @@ public class RedeSocial {
                     case "P":
                         try{
                             Post post = listaDeUsuarios.get(posicaoDoUsuario).PostarTimeLine();
-                            listaDeUsuarios.get(posicaoDoUsuario).getListaDePosts()[listaDeUsuarios.get(posicaoDoUsuario).getQuantPosts()] = post;
-                            System.out.printf("Post %d inserido com sucesso\n", listaDeUsuarios.get(posicaoDoUsuario).getQuantPosts() + 1);
-                            listaDeUsuarios.get(posicaoDoUsuario).setQuantPosts(listaDeUsuarios.get(posicaoDoUsuario).getQuantPosts() + 1);
+                            listaDeUsuarios.get(posicaoDoUsuario).getListaDePosts().add(post);
+                            System.out.printf("Post %d inserido com sucesso\n", listaDeUsuarios.get(posicaoDoUsuario).getListaDePosts().size());
                         } catch (CampoVazioException e){
                             System.out.print(e.getMessageCVE());
                         }
@@ -184,7 +183,7 @@ public class RedeSocial {
                     case "T":
                         System.out.println("\nVocê solicitou a exibição da sua timeline.");
                         try{
-                            ExibirTimeLine(listaDeUsuarios.get(posicaoDoUsuario).getQuantPosts(), posicaoDoUsuario);
+                            ExibirTimeLine(posicaoDoUsuario);
                         }catch (NoPostsOnPlataformException e){
                             System.out.println(e.getMessageNPOP());
                         }
@@ -210,15 +209,15 @@ public class RedeSocial {
         System.out.print("Opção desejada: ");
         return entrada.nextLine().toUpperCase();
     }
-    private void ExibirTimeLine(int postsFeitos, int posicaoUsuario) throws NoPostsOnPlataformException{
-        if(postsFeitos == 0){
+    private void ExibirTimeLine(int posicaoUsuario) throws NoPostsOnPlataformException{
+        if(this.listaDeUsuarios.get(posicaoUsuario).getListaDePosts().isEmpty()){
             throw new NoPostsOnPlataformException();
         }else{
-            for (int i = 0; i < postsFeitos; i++) {
+            for (int i = 0; i < listaDeUsuarios.get(posicaoUsuario).getListaDePosts().size(); i++) {
                 System.out.printf("Post %d - ",i+1);
-                System.out.printf("Dia: %s ", this.listaDeUsuarios.get(posicaoUsuario).getListaDePosts()[i].getData());
-                System.out.printf("às %s. ", this.listaDeUsuarios.get(posicaoUsuario).getListaDePosts()[i].getHora());
-                System.out.println(this.listaDeUsuarios.get(posicaoUsuario).getListaDePosts()[i].getTexto());
+                System.out.printf("Dia: %s ", this.listaDeUsuarios.get(posicaoUsuario).getListaDePosts().get(i).getData());
+                System.out.printf("às %s. ", this.listaDeUsuarios.get(posicaoUsuario).getListaDePosts().get(i).getHora());
+                System.out.println(this.listaDeUsuarios.get(posicaoUsuario).getListaDePosts().get(i).getTexto());
             }
         }
     }
