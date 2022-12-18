@@ -4,12 +4,13 @@ import redesocial.exceptions.*;
 import redesocial.usuarios.Post;
 import redesocial.usuarios.Usuario;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class RedeSocial {
     private Scanner entrada = new Scanner(System.in);
-    private Usuario[] listaDeUsuarios = new Usuario[100];
-    private int quantUsuarios = 0;
+    List<Usuario> listaDeUsuarios = new ArrayList<>();
     private int posicaoDoUsuario = 0;
     private static final RedeSocial instance = new RedeSocial();
 
@@ -88,11 +89,11 @@ public class RedeSocial {
     }
     private void ListarUsuarios() throws SemUsuariosCadastradosException{
         System.out.println("\nSolicitação de listagem de usuários na Rede Social #Dev_Makers");
-        if(quantUsuarios == 0){
+        if(listaDeUsuarios.isEmpty()){
             throw new SemUsuariosCadastradosException();
         } else {
-            for (int i = 0; i < quantUsuarios; i++) {
-                System.out.printf("Usuário %d - Nome: %s login: %s\n",i+1,listaDeUsuarios[i].getNome(), listaDeUsuarios[i].getLogin());
+            for (int i = 0; i < listaDeUsuarios.size(); i++) {
+                System.out.printf("Usuário %d - Nome: %s login: %s\n",i+1, listaDeUsuarios.get(i).getNome(), listaDeUsuarios.get(i).getLogin());
             }
             System.out.println("\nListagem de usuários cadastrados completa");
         }
@@ -110,21 +111,21 @@ public class RedeSocial {
             throw new CampoVazioException();
         }
 
-        for(int i=0; i<quantUsuarios;i++) {
-            if (loginUsuario.equals(listaDeUsuarios[i].getLogin())) {
+        for (Usuario listaDeUsuario : listaDeUsuarios) {
+            if (loginUsuario.equals(listaDeUsuario.getLogin())) {
                 throw new LoginExistenteExcepetion();
             }
         }
 
-        listaDeUsuarios[quantUsuarios] =  new Usuario(nomeUsuario, loginUsuario, senhaUsuario);
-        System.out.printf("\nAção realizada com sucesso. \nSeja bem-vindo %s, seu cadastro foi inserido com sucesso e seu login a partir de agora é: %s\n", listaDeUsuarios[quantUsuarios].getNome(), listaDeUsuarios[quantUsuarios].getLogin());
-        quantUsuarios++;
+        Usuario novoUsuario = new Usuario(nomeUsuario, loginUsuario, senhaUsuario);
+        listaDeUsuarios.add(novoUsuario);
+        System.out.printf("\nAção realizada com sucesso. \nSeja bem-vindo %s, seu cadastro foi inserido com sucesso e seu login a partir de agora é: %s\n", nomeUsuario, loginUsuario);
     }
     private void loginDeUsuario() throws CampoVazioException, NoUserPlataformException, UserNotFoundException, InvalidPasswordException{
 
         boolean checkUsuario = false;
 
-        if(quantUsuarios == 0){
+        if(listaDeUsuarios.isEmpty()){
             throw new NoUserPlataformException();
         }
 
@@ -142,8 +143,8 @@ public class RedeSocial {
             throw new CampoVazioException();
         }
 
-        for (int i = 0; i < quantUsuarios; i++) {
-            if (loginUsuario.equals(listaDeUsuarios[i].getLogin())){
+        for (int i = 0; i < listaDeUsuarios.size(); i++) {
+            if (loginUsuario.equals(listaDeUsuarios.get(i).getLogin())){
                 checkUsuario = true;
                 posicaoDoUsuario = i;
             }
@@ -154,7 +155,7 @@ public class RedeSocial {
             throw new UserNotFoundException();
         }
 
-        if(listaDeUsuarios[posicaoDoUsuario].validarSenha(senhaUsuario)){
+        if(listaDeUsuarios.get(posicaoDoUsuario).validarSenha(senhaUsuario)){
             System.out.println("\nSenha ✓");
         } else {
             throw new InvalidPasswordException();
@@ -172,10 +173,10 @@ public class RedeSocial {
                 switch (opcaoPerfilUsuario) {
                     case "P":
                         try{
-                            Post post = listaDeUsuarios[posicaoDoUsuario].PostarTimeLine();
-                            listaDeUsuarios[posicaoDoUsuario].getListaDePosts()[listaDeUsuarios[posicaoDoUsuario].getQuantPosts()] = post;
-                            System.out.printf("Post %d inserido com sucesso\n",listaDeUsuarios[posicaoDoUsuario].getQuantPosts() + 1);
-                            listaDeUsuarios[posicaoDoUsuario].setQuantPosts(listaDeUsuarios[posicaoDoUsuario].getQuantPosts() + 1);
+                            Post post = listaDeUsuarios.get(posicaoDoUsuario).PostarTimeLine();
+                            listaDeUsuarios.get(posicaoDoUsuario).getListaDePosts()[listaDeUsuarios.get(posicaoDoUsuario).getQuantPosts()] = post;
+                            System.out.printf("Post %d inserido com sucesso\n", listaDeUsuarios.get(posicaoDoUsuario).getQuantPosts() + 1);
+                            listaDeUsuarios.get(posicaoDoUsuario).setQuantPosts(listaDeUsuarios.get(posicaoDoUsuario).getQuantPosts() + 1);
                         } catch (CampoVazioException e){
                             System.out.print(e.getMessageCVE());
                         }
@@ -183,7 +184,7 @@ public class RedeSocial {
                     case "T":
                         System.out.println("\nVocê solicitou a exibição da sua timeline.");
                         try{
-                            ExibirTimeLine(listaDeUsuarios[posicaoDoUsuario].getQuantPosts(), posicaoDoUsuario);
+                            ExibirTimeLine(listaDeUsuarios.get(posicaoDoUsuario).getQuantPosts(), posicaoDoUsuario);
                         }catch (NoPostsOnPlataformException e){
                             System.out.println(e.getMessageNPOP());
                         }
@@ -200,7 +201,7 @@ public class RedeSocial {
 
     private String TelaDePerfil(){
         System.out.println("------------------------------------------------------------------------------------------------------");
-        System.out.printf("Bem-Vindo ao seu Perfil %s.",listaDeUsuarios[posicaoDoUsuario].getNome());
+        System.out.printf("Bem-Vindo ao seu Perfil %s.", listaDeUsuarios.get(posicaoDoUsuario).getNome());
         System.out.println("\nO que você gostaria de fazer?");
         System.out.println("\nDigite o código referente ao seu desejo.");
         System.out.println("'P': Postar");
@@ -215,9 +216,9 @@ public class RedeSocial {
         }else{
             for (int i = 0; i < postsFeitos; i++) {
                 System.out.printf("Post %d - ",i+1);
-                System.out.printf("Dia: %s ", this.listaDeUsuarios[posicaoUsuario].getListaDePosts()[i].getData());
-                System.out.printf("às %s. ", this.listaDeUsuarios[posicaoUsuario].getListaDePosts()[i].getHora());
-                System.out.println(this.listaDeUsuarios[posicaoUsuario].getListaDePosts()[i].getTexto());
+                System.out.printf("Dia: %s ", this.listaDeUsuarios.get(posicaoUsuario).getListaDePosts()[i].getData());
+                System.out.printf("às %s. ", this.listaDeUsuarios.get(posicaoUsuario).getListaDePosts()[i].getHora());
+                System.out.println(this.listaDeUsuarios.get(posicaoUsuario).getListaDePosts()[i].getTexto());
             }
         }
     }
